@@ -19,7 +19,7 @@ contract Lottery {
         players.push(msg.sender);
     }
 
-    function generateRandomNumber() public view returns (uint256) {
+    function generateRandomNumber() private view returns (uint256) {
         return
             uint256(
                 keccak256(
@@ -30,5 +30,15 @@ contract Lottery {
                     )
                 )
             );
+    }
+
+    function pickWinner() public isOwner {
+        uint256 randomNumber = generateRandomNumber();
+        uint256 index = randomNumber % players.length;
+
+        address payable winner = players[index];
+        winner.transfer(address(this).balance); // transfer contract amount to winner
+
+        players = new address payable[](0); // reset
     }
 }
